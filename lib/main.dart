@@ -8,6 +8,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Startup Name Generator',
+      theme: new ThemeData(
+        primaryColor: Colors.greenAccent,
+      ),
       home: RandomWords(),
     );
   }
@@ -20,9 +23,7 @@ class RandomWords extends StatefulWidget {
 
 class RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
-
   final _saved = new Set<WordPair>();
-
   final _biggerFont = const TextStyle(fontSize: 18.0);
 
   @override
@@ -30,6 +31,9 @@ class RandomWordsState extends State<RandomWords> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('Startup Name Generator'),
+        actions: <Widget>[
+          new IconButton(icon: const Icon(Icons.list), onPressed: _pushSaved),
+        ],
       ),
       body: _buildSuggestions(),
     );
@@ -72,6 +76,38 @@ class RandomWordsState extends State<RandomWords> {
           },
         );
       },
+    );
+  }
+
+  void _pushSaved(){
+    Navigator.of(context).push(
+      new MaterialPageRoute<void>(
+          builder: (BuildContext context) {
+            final Iterable<ListTile> tiles = _saved.map(
+                (WordPair pair) {
+                  return new ListTile(
+                    title: new Text(
+                    pair.asPascalCase,
+                    style: _biggerFont,
+                  ),
+                  );
+                },
+            );
+            final List<Widget> divided = ListTile
+            .divideTiles(
+              context: context,
+              tiles: tiles,
+            )
+            .toList();
+
+            return new Scaffold(
+              appBar: new AppBar(
+                title: const Text('Saved Suggestions'),
+              ),
+              body: new ListView(children: divided),
+            );
+          },
+      ),
     );
   }
 }
